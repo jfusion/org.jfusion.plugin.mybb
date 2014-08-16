@@ -48,7 +48,7 @@ class Admin extends \JFusion\Plugin\Admin
      */
     function setupFromPath($softwarePath)
     {
-        $myfile = $softwarePath . 'inc' . DIRECTORY_SEPARATOR . 'config.php';
+        $myfile = $softwarePath . 'inc/config.php';
 
         $params = array();
         //include config file
@@ -82,8 +82,8 @@ class Admin extends \JFusion\Plugin\Admin
 
 	        $db->setQuery($query);
             $bb_url = $db->loadResult();
-            if (substr($bb_url, -1) != DIRECTORY_SEPARATOR) {
-                $bb_url.= DIRECTORY_SEPARATOR;
+            if (substr($bb_url, -1) != '/') {
+                $bb_url .= '/';
             }
             $params['source_url'] = $bb_url;
 
