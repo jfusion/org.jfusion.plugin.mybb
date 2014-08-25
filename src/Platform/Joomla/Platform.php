@@ -75,8 +75,8 @@ class Platform extends Joomla
 			    ->select('a.tid AS threadid, b.pid AS postid, b.username, b.uid AS userid, a.subject, b.dateline')
 			    ->from('#__threads AS a')
 			    ->innerJoin('#__posts as b ON a.firstpost = b.pid')
-			    ->where($where)
-			    ->order('a.lastpost ' . $result_order);
+			    ->where($db->quote($where))
+			    ->order('a.lastpost ' . $db->quote($result_order));
 
 		    $query[self::LAT . '0'] = (string)$q . $limiter;
 
@@ -84,8 +84,8 @@ class Platform extends Joomla
 			    ->select('a.tid AS threadid, b.pid AS postid, b.username, b.uid AS userid, a.subject, b.dateline')
 			    ->from('#__threads AS a')
 			    ->innerJoin('#__posts as b ON a.tid = b.tid AND a.lastpost = b.dateline AND a.lastposteruid = b.uid')
-			    ->where($where)
-			    ->order('a.lastpost ' . $result_order);
+			    ->where($db->quote($where))
+			    ->order('a.lastpost ' . $db->quote($result_order));
 
 		    $query[self::LAT . '1'] = (string)$q . $limiter;
 
@@ -93,16 +93,16 @@ class Platform extends Joomla
 			    ->select('a.tid AS threadid, b.pid AS postid, b.username, b.uid AS userid, b.subject, b.dateline, b.message AS body')
 			    ->from('#__threads AS a')
 			    ->innerJoin('#__posts as b ON a.firstpost = b.pid')
-			    ->where($where)
-			    ->order('a.dateline ' . $result_order);
+			    ->where($db->quote($where))
+			    ->order('a.dateline ' . $db->quote($result_order));
 
 		    $query[self::LCT] = (string)$q . $limiter;
 
 		    $q = $db->getQuery(true)
 			    ->select('a.tid AS threadid, a.pid AS postid, a.username, a.uid AS userid, a.subject, a.dateline, a.message AS body')
 			    ->from('#__posts AS a')
-			    ->where($where)
-			    ->order('a.dateline ' . $result_order);
+			    ->where($db->quote($where))
+			    ->order('a.dateline ' . $db->quote($result_order));
 
 		    $query[self::LCP] = (string)$q . $limiter;
 	    } catch (Exception $e) {

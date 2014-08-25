@@ -52,7 +52,7 @@ class User extends \JFusion\Plugin\User
 			    ->select('a.uid as userid, a.username, a.usergroup as group_id, a.username as name, a.email, a.password, a.salt as password_salt, a.usergroup as activation, b.isbannedgroup as block')
 			    ->from('#__users as a')
 			    ->join('LEFT OUTER', '#__usergroups as b ON a.usergroup = b.gid')
-			    ->where($identifier_type . ' = ' . $db->quote($identifier));
+			    ->where($db->quoteName($identifier_type) . ' = ' . $db->quote($identifier));
 
 		    $db->setQuery($query);
 		    $result = $db->loadObject();
@@ -282,7 +282,7 @@ class User extends \JFusion\Plugin\User
 
 		    $query = $db->getQuery(true)
 			    ->update('#__users')
-			    ->set('usergroup = ' . $usergroup)
+			    ->set('usergroup = ' . $db->quote($usergroup))
 			    ->where('uid = ' . (int)$existinguser->userid);
 
 		    $db->setQuery($query);
@@ -382,7 +382,7 @@ class User extends \JFusion\Plugin\User
 
 		    $query = $db->getQuery(true)
 			    ->update('#__users')
-			    ->set('usergroup = ' . $usergroup)
+			    ->set('usergroup = ' . $db->quote($usergroup))
 			    ->where('uid = ' . (int)$existinguser->userid);
 
 		    $db->setQuery($query);
@@ -406,7 +406,7 @@ class User extends \JFusion\Plugin\User
 
 	    $query = $db->getQuery(true)
 		    ->update('#__users')
-		    ->set('usergroup = ' . (int)$usergroup)
+		    ->set('usergroup = ' . $db->quote($usergroup))
 		    ->where('uid = ' . (int)$existinguser->userid);
 
 	    $db->setQuery($query);
