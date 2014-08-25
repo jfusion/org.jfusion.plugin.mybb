@@ -60,16 +60,16 @@ class Platform extends Joomla
     /**
      * @param array $usedforums
      * @param string $result_order
-     * @param int $result_limit
+
      * @return array
      */
-    function getActivityQuery($usedforums, $result_order, $result_limit) {
+    function getActivityQuery($usedforums, $result_order) {
 	    $query = array();
-	    try {
-	        $where = (!empty($usedforums)) ? 'a.fid IN (' . $usedforums . ')' : '';
-		    $limiter = ' LIMIT 0,' . $result_limit;
-
+	    try
+	    {
 		    $db = Factory::getDatabase($this->getJname());
+
+	        $where = (!empty($usedforums)) ? 'a.fid IN (' . $db->quote($usedforums) . ')' : '';
 
 		    $q = $db->getQuery(true)
 			    ->select('a.tid AS threadid, b.pid AS postid, b.username, b.uid AS userid, a.subject, b.dateline')
@@ -78,7 +78,7 @@ class Platform extends Joomla
 			    ->where($db->quote($where))
 			    ->order('a.lastpost ' . $db->quote($result_order));
 
-		    $query[self::LAT . '0'] = (string)$q . $limiter;
+		    $query[self::LAT . '0'] = (string)$q;
 
 		    $q = $db->getQuery(true)
 			    ->select('a.tid AS threadid, b.pid AS postid, b.username, b.uid AS userid, a.subject, b.dateline')
@@ -87,7 +87,7 @@ class Platform extends Joomla
 			    ->where($db->quote($where))
 			    ->order('a.lastpost ' . $db->quote($result_order));
 
-		    $query[self::LAT . '1'] = (string)$q . $limiter;
+		    $query[self::LAT . '1'] = (string)$q;
 
 		    $q = $db->getQuery(true)
 			    ->select('a.tid AS threadid, b.pid AS postid, b.username, b.uid AS userid, b.subject, b.dateline, b.message AS body')
@@ -96,7 +96,7 @@ class Platform extends Joomla
 			    ->where($db->quote($where))
 			    ->order('a.dateline ' . $db->quote($result_order));
 
-		    $query[self::LCT] = (string)$q . $limiter;
+		    $query[self::LCT] = (string)$q;
 
 		    $q = $db->getQuery(true)
 			    ->select('a.tid AS threadid, a.pid AS postid, a.username, a.uid AS userid, a.subject, a.dateline, a.message AS body')
@@ -104,7 +104,7 @@ class Platform extends Joomla
 			    ->where($db->quote($where))
 			    ->order('a.dateline ' . $db->quote($result_order));
 
-		    $query[self::LCP] = (string)$q . $limiter;
+		    $query[self::LCP] = (string)$q;
 	    } catch (Exception $e) {
 		    Framework::raise(LogLevel::ERROR, $e, $this->getJname());
 	    }
