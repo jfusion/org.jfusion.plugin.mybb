@@ -59,8 +59,7 @@ class User extends \JFusion\Plugin\User
 		    if ($result) {
 			    //Check to see if user needs to be activated
 			    if ($result->group_id == 5) {
-				    jimport('joomla.user.helper');
-				    $result->activation = Framework::genRandomPassword(32);
+				    $result->activation = $this->genRandomPassword(32);
 			    } else {
 				    $result->activation = null;
 			    }
@@ -247,7 +246,7 @@ class User extends \JFusion\Plugin\User
      */
     function updatePassword(Userinfo $userinfo, Userinfo &$existinguser) {
 	    jimport('joomla.user.helper');
-	    $existinguser->password_salt = Framework::genRandomPassword(6);
+	    $existinguser->password_salt = $this->genRandomPassword(6);
 	    $existinguser->password = md5(md5($existinguser->password_salt) . md5($userinfo->password_clear));
 	    $db = Factory::getDatabase($this->getJname());
 
@@ -312,20 +311,19 @@ class User extends \JFusion\Plugin\User
 		    $user->uid = null;
 		    $user->username = $userinfo->username;
 		    $user->email = $userinfo->email;
-		    jimport('joomla.user.helper');
 		    if (isset($userinfo->password_clear)) {
 			    //we can update the password
-			    $user->salt = Framework::genRandomPassword(6);
+			    $user->salt = $this->genRandomPassword(6);
 			    $user->password = md5(md5($user->salt) . md5($userinfo->password_clear));
-			    $user->loginkey = Framework::genRandomPassword(50);
+			    $user->loginkey = $this->genRandomPassword(50);
 		    } else {
 			    $user->password = $userinfo->password;
 			    if (!isset($userinfo->password_salt)) {
-				    $user->salt = Framework::genRandomPassword(6);
+				    $user->salt = $this->genRandomPassword(6);
 			    } else {
 				    $user->salt = $userinfo->password_salt;
 			    }
-			    $user->loginkey = Framework::genRandomPassword(50);
+			    $user->loginkey = $this->genRandomPassword(50);
 		    }
 		    if (!empty($userinfo->activation)) {
 			    $user->usergroup = $this->params->get('activationgroup');
