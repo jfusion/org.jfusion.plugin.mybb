@@ -112,47 +112,39 @@ class User extends \JFusion\Plugin\User
     function createSession(Userinfo $userinfo, $options) {
         $status = array(LogLevel::ERROR => array(), LogLevel::DEBUG => array());
         //do not create sessions for blocked users
-	    try {
-	        if (!empty($userinfo->block) || !empty($userinfo->activation)) {
-	            $status[LogLevel::ERROR][] = Text::_('FUSION_BLOCKED_USER');
-	        } else {
-	            //get cookiedomain, cookiepath (theIggs solution)
-	            $cookiedomain = $this->params->get('cookie_domain', '');
-	            $cookiepath = $this->params->get('cookie_path', '/');
-	            //get myBB uid, loginkey
+	    //get cookiedomain, cookiepath (theIggs solution)
+	    $cookiedomain = $this->params->get('cookie_domain', '');
+	    $cookiepath = $this->params->get('cookie_path', '/');
+	    //get myBB uid, loginkey
 
-		        $db = Factory::getDatabase($this->getJname());
+	    $db = Factory::getDatabase($this->getJname());
 
-		        $query = $db->getQuery(true)
-			        ->select('uid, loginkey')
-			        ->from('#__users')
-			        ->where('username = ' . $db->quote($userinfo->username));
+	    $query = $db->getQuery(true)
+		    ->select('uid, loginkey')
+		    ->from('#__users')
+		    ->where('username = ' . $db->quote($userinfo->username));
 
-		        $db->setQuery($query);
-		        $user = $db->loadObject();
-		        // Set cookie values
-		        $name = 'mybbuser';
-		        $value = $user->uid . '_' . $user->loginkey;
-		        $httponly = true;
-		        if (isset($options['remember'])) {
-			        if ($options['remember']) {
-				        // Make the cookie expire in a years time
-				        $expires = 60 * 60 * 24 * 365;
-			        } else {
-				        // Make the cookie expire in 30 minutes
-				        $expires = 60 * 30;
-			        }
-		        } else {
-			        //Make the cookie expire in 30 minutes
-			        $expires = 60 * 30;
-		        }
-		        $cookiepath = str_replace(array("\n", "\r"), '', $cookiepath);
-		        $cookiedomain = str_replace(array("\n", "\r"), '', $cookiedomain);
-		        $status[LogLevel::DEBUG][] = $this->addCookie($name, $value, $expires, $cookiepath, $cookiedomain, false, $httponly , true);
-	        }
-	    } catch (Exception $e) {
-		    $status[LogLevel::ERROR][] = $e->getMessage();
+	    $db->setQuery($query);
+	    $user = $db->loadObject();
+	    // Set cookie values
+	    $name = 'mybbuser';
+	    $value = $user->uid . '_' . $user->loginkey;
+	    $httponly = true;
+	    if (isset($options['remember'])) {
+		    if ($options['remember']) {
+			    // Make the cookie expire in a years time
+			    $expires = 60 * 60 * 24 * 365;
+		    } else {
+			    // Make the cookie expire in 30 minutes
+			    $expires = 60 * 30;
+		    }
+	    } else {
+		    //Make the cookie expire in 30 minutes
+		    $expires = 60 * 30;
 	    }
+	    $cookiepath = str_replace(array("\n", "\r"), '', $cookiepath);
+	    $cookiedomain = str_replace(array("\n", "\r"), '', $cookiedomain);
+	    $status[LogLevel::DEBUG][] = $this->addCookie($name, $value, $expires, $cookiepath, $cookiedomain, false, $httponly , true);
         return $status;
     }
 
