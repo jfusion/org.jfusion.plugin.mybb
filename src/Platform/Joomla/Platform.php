@@ -243,11 +243,8 @@ class Platform extends Joomla
         return $url;
     }
 
-	/**
-	 * @params object $data
-	 */
 	/* temp disabled native frameless
-	function getBuffer(&$data) {
+	function getBuffer() {
 		// Get the path
 		$source_path = $this->params->get('source_path');
 		//get the filename
@@ -268,7 +265,7 @@ class Platform extends Joomla
 			// Get the output
 			ob_start();
 			include_once ($index_file);
-			$data->buffer = ob_get_contents();
+			$this->data->buffer = ob_get_contents();
 			ob_end_clean();
 			//change the current directory back to Joomla.
 			chdir(JPATH_SITE);
@@ -276,18 +273,13 @@ class Platform extends Joomla
 	}
 */
 
-	/**
-	 * @param object $data
-	 *
-	 * @return void
-	 */
-	function parseBody(&$data) {
+	function parseBody() {
 		$regex_body = array();
 		$replace_body = array();
 		$callback_body = array();
 
 		$regex_body[] = '#action="(.*?)"(.*?)>#m';
-		$replace_body[] = '';//$this->fixAction("index.php$1","$2","' . $data->baseURL . '")';
+		$replace_body[] = '';//$this->fixAction("index.php$1","$2","' . $this->data->baseURL . '")';
 		$callback_body[] = 'fixAction';
 
 		$regex_body[]	= '#(?<=href=["\'])[./|/](.*?)(?=["\'])#mS';
@@ -298,38 +290,33 @@ class Platform extends Joomla
 		$replace_body[] = '';
 		$callback_body[] = 'fixUrl';
 
-		$regex_body[]	= '#(?<=href=["\'])' . $data->integratedURL . '(.*?)(?=["\'])#m';
+		$regex_body[]	= '#(?<=href=["\'])' . $this->data->integratedURL . '(.*?)(?=["\'])#m';
 		$replace_body[] = '';
 		$callback_body[] = 'fixUrl';
 
-		$regex_body[]	= '#(?<=href=\\\")' . $data->integratedURL . '(.*?)(?=\\\")#mS';
+		$regex_body[]	= '#(?<=href=\\\")' . $this->data->integratedURL . '(.*?)(?=\\\")#mS';
 		$replace_body[] = '';
 		$callback_body[] = 'fixUrl';
 
 		$regex_body[] = '#(src)=["\'][./|/](.*?)["\']#mS';
-		$replace_body[] = '$1="' . $data->integratedURL . '$2"';
+		$replace_body[] = '$1="' . $this->data->integratedURL . '$2"';
 		$callback_body[] = '';
 
 		$regex_body[] = '#(src)=["\'](?!\w{0,10}://|\w{0,10}:)(.*?)["\']#mS';
-		$replace_body[] = '$1="' . $data->integratedURL . '$2"';
+		$replace_body[] = '$1="' . $this->data->integratedURL . '$2"';
 		$callback_body[] = '';
 
 		foreach ($regex_body as $k => $v) {
 			//check if we need to use callback
 			if(!empty($callback_body[$k])){
-				$data->body = preg_replace_callback($regex_body[$k], array(&$this, $callback_body[$k]), $data->body);
+				$this->data->body = preg_replace_callback($regex_body[$k], array(&$this, $callback_body[$k]), $this->data->body);
 			} else {
-				$data->body = preg_replace($regex_body[$k], $replace_body[$k], $data->body);
+				$this->data->body = preg_replace($regex_body[$k], $replace_body[$k], $this->data->body);
 			}
 		}
 	}
 
-	/**
-	 * @param object $data
-	 *
-	 * @return void
-	 */
-	function parseHeader(&$data) {
+	function parseHeader() {
 		static $regex_header, $replace_header;
 		if (!$regex_header || !$replace_header) {
 			// Define our preg arrays
@@ -339,15 +326,15 @@ class Platform extends Joomla
 
 			//fix for URL redirects
 			$regex_header[] = '#(?<=<meta http-equiv="refresh" content=")(.*?)(?=")#mi';
-			$replace_header[] = ''; //$this->fixRedirect("$1","' . $data->baseURL . '")';
+			$replace_header[] = ''; //$this->fixRedirect("$1","' . $this->data->baseURL . '")';
 			$callback_header[] = 'fixRedirect';
 		}
 		foreach ($regex_header as $k => $v) {
 			//check if we need to use callback
 			if(!empty($callback_header[$k])) {
-				$data->header = preg_replace_callback($regex_header[$k], array(&$this, $callback_header[$k]), $data->header);
+				$this->data->header = preg_replace_callback($regex_header[$k], array(&$this, $callback_header[$k]), $this->data->header);
 			} else {
-				$data->header = preg_replace($regex_header[$k], $replace_header[$k], $data->header);
+				$this->data->header = preg_replace($regex_header[$k], $replace_header[$k], $this->data->header);
 			}
 		}
 	}
