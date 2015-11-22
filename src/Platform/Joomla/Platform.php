@@ -221,6 +221,7 @@ class Platform extends Joomla
      * @return string
      */
     function getAvatar($userid) {
+	    $url = '';
 	    try {
 		    //get the connection to the db
 		    $db = Factory::getDatabase($this->getJname());
@@ -233,12 +234,14 @@ class Platform extends Joomla
 
 		    $db->setQuery($query);
 		    $avatar = $db->loadResult();
-		    $avatar = substr($avatar, 2);
-
-		    $url = $this->params->get('source_url') . $avatar;
+		    if (!empty($avatar)) {
+			    $avatar = substr($avatar, 2);
+			    if (!empty($avatar)) {
+				    $url = $this->params->get('source_url') . $avatar;
+			    }
+		    }
 	    } catch (Exception $e) {
 		    Framework::raise(LogLevel::ERROR, $e, $this->getJname());
-		    $url = '';
 	    }
         return $url;
     }
